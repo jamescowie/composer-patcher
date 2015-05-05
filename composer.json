@@ -12,7 +12,8 @@
     "require": {
       "composer/composer": "1.0.*@dev",
       "eloquent/composer-config-reader": "2.*",
-      "symfony/console": "2.6.*"
+      "symfony/console": "2.6.*",
+      "symfony/process": "*"
     },
     "autoload": {
         "psr-0": {
@@ -25,7 +26,7 @@
           "autoloader-patch": {
               "name": "Autoloader-patcher",
               "title": "Allow composer autoloader to be applied to Mage.php",
-              "url": "https://raw.githubusercontent.com/inviqa/magento-patches/master/change-order-mode-to-relevance-when-not-in-a-category/0001-Change-order-mode-to-relevance-when-not-in-a-categor.patch?token=AA3sXDaT4YKSMw5e4wQlO5m2WJtf2cp8ks5VUgcJwA%3D%3D"
+              "url": "https://raw.githubusercontent.com/inviqa/magento-patches/magento-composer-autoloader-patch/composer-autoloader/0001-Adding-Composer-autoloader-to-Mage.patch?token=AA3sXKf7NEkV25PjHZcpYlQOsUezdD7Rks5VUkqNwA%3D%3D"
           }
         }
       }

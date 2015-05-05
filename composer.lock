@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "495054e7335dddd01e0be9de2881a00c",
+    "hash": "0b26be5dac4a84ffbb8f78cda5f9af2f",
     "packages": [
         {
             "name": "composer/composer",
@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/composer.git",
-                "reference": "13a33496037d32c461e118bfefe4cdbb2976fafe"
+                "reference": "6b94f6faf3c28fc1c9b148ca13f4be5808b8cc3b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/composer/zipball/13a33496037d32c461e118bfefe4cdbb2976fafe",
-                "reference": "13a33496037d32c461e118bfefe4cdbb2976fafe",
+                "url": "https://api.github.com/repos/composer/composer/zipball/6b94f6faf3c28fc1c9b148ca13f4be5808b8cc3b",
+                "reference": "6b94f6faf3c28fc1c9b148ca13f4be5808b8cc3b",
                 "shasum": ""
             },
             "require": {
@@ -75,7 +75,7 @@
                 "dependency",
                 "package"
             ],
-            "time": "2015-05-05 17:07:08"
+            "time": "2015-05-05 18:41:50"
         },
         {
             "name": "eloquent/composer-config-reader",

@@ -4,6 +4,7 @@ namespace Inviqa;
 
 use Inviqa\Downloader\Composer as composerDownloader;
 use Symfony\Component\Console\Output\ConsoleOutput;
+use Symfony\Component\Process\Process;
 
 class Patcher
 {
@@ -33,5 +34,21 @@ class Patcher
     private function applyPatch()
     {
         $this->output->writeln("<info>Applying Patch</info>");
+
+        foreach ($this->patchFiles as $filesToPatch)
+        {
+            //$process = new Process("patch -p 1 --no-backup-if-mismatch < " . $filesToPatch);
+
+            $process = new Process("patch -p 1 --no-backup-if-mismatch < " . $filesToPatch);
+            try {
+                $process->mustRun();
+
+                echo $process->getOutput();
+            } catch (ProcessFailedException $e) {
+                echo $e->getMessage();
+            }
+
+            //$this->output->writeln("<info>Patched file.</info>");
+        }
     }
 }

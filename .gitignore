@@ -2,3 +2,4 @@
 bin/composer
 bin/jsonlint
 bin/validate-json
+public/
