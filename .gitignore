@@ -1,0 +1,4 @@
+/vendor/
+bin/composer
+bin/jsonlint
+bin/validate-json

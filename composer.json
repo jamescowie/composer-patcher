@@ -1,0 +1,34 @@
+{
+    "name": "jamescowie/autoloader-strategy",
+    "description": "Magento patcher to enable composer autoloader",
+    "type": "magento-module",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "jamescowie",
+            "email": "james@jcowie.co.uk"
+        }
+    ],
+    "require": {
+      "composer/composer": "1.0.*@dev",
+      "eloquent/composer-config-reader": "2.*",
+      "symfony/console": "2.6.*"
+    },
+    "autoload": {
+        "psr-0": {
+          "Inviqa\\": "src/"
+        }
+    },
+    "extra": {
+      "patches": {
+        "magento": {
+          "autoloader-patch": {
+              "name": "Autoloader-patcher",
+              "title": "Allow composer autoloader to be applied to Mage.php",
+              "url": "https://raw.githubusercontent.com/inviqa/magento-patches/master/change-order-mode-to-relevance-when-not-in-a-category/0001-Change-order-mode-to-relevance-when-not-in-a-categor.patch?token=AA3sXDaT4YKSMw5e4wQlO5m2WJtf2cp8ks5VUgcJwA%3D%3D"
+          }
+        }
+      }
+    },
+    "bin": ["bin/autoloader-patcher"]
+}
