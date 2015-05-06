@@ -1,6 +1,6 @@
 {
-    "name": "jamescowie/autoloader-strategy",
-    "description": "Magento patcher to enable composer autoloader",
+    "name": "jamescowie/composer-patcher",
+    "description": "Apply patches using composer",
     "license": "MIT",
     "authors": [
         {
