@@ -1,7 +1,6 @@
 {
     "name": "jamescowie/autoloader-strategy",
     "description": "Magento patcher to enable composer autoloader",
-    "type": "magento-module",
     "license": "MIT",
     "authors": [
         {
@@ -10,7 +9,6 @@
         }
     ],
     "require": {
-      "composer/composer": "1.0.*@dev",
       "eloquent/composer-config-reader": "2.*",
       "symfony/console": "2.6.*",
       "symfony/process": "*"
