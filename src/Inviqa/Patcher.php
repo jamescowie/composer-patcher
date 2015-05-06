@@ -4,6 +4,7 @@ namespace Inviqa;
 
 use Inviqa\Downloader\Composer as composerDownloader;
 use Symfony\Component\Console\Output\ConsoleOutput;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
 class Patcher
