@@ -24,7 +24,7 @@
           "autoloader-patch": {
               "name": "Autoloader-patcher",
               "title": "Allow composer autoloader to be applied to Mage.php",
-              "url": "https://raw.githubusercontent.com/inviqa/magento-patches/magento-composer-autoloader-patch/composer-autoloader/0001-Adding-Composer-autoloader-to-Mage.patch?token=AAy9dE0xUgwNjclj7OFjnl4l97glHVUjks5VUxypwA%3D%3D"
+              "url": "https://raw.githubusercontent.com/inviqa/magento-patches/magento-composer-autoloader-patch/composer-autoloader/0001-Adding-Composer-autoloader-to-Mage.patch?token=AA3sXKf7NEkV25PjHZcpYlQOsUezdD7Rks5VUkqNwA%3D%3D"
           }
         }
       }
