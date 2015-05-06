@@ -29,5 +29,5 @@
         }
       }
     },
-    "bin": ["bin/autoloader-patcher"]
+    "bin": ["bin/composer-patcher"]
 }
