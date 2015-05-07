@@ -19,25 +19,19 @@ a) Patches need to be declared in the `extra` config area of Composer (root pack
   }
 ```
 
-b) Additional scripts need to be added for automatic patching on `install` or `update` (root package only):
+b) Additional scripts callbacks need to be added for automatic patching on `install` or `update` (root package only):
 ```json
   "scripts": {
     "post-install-cmd": [
-        "php bin/autoloader-patcher"
+        "Inviqa\\Command::patch"
     ],
     "post-update-cmd": [
-        "php bin/autoloader-patcher"
+        "Inviqa\\Command::patch"
     ]
   }
 ```
-Theoretically, you can use whatever [Composer event](https://getcomposer.org/doc/articles/scripts.md#event-names) you want, 
-or even [trigger the events manually](https://getcomposer.org/doc/articles/scripts.md#running-scripts-manually).
+You can use whatever [Composer *Command* event](https://getcomposer.org/doc/articles/scripts.md#event-names) you want, 
+or even [trigger the events manually](https://getcomposer.org/doc/articles/scripts.md#running-scripts-manually).  
+Again, note that only *Command events* are supported. Please check the above link to see which ones are they.
 
-c) explicitly setting the bin dir at the root level (root package only):
-```json
-  "config": {
-    "bin-dir": "bin"
-  }
-```
-
-d) the `patch` tool must be available
+c) the `patch` tool must be available
