@@ -1,6 +1,6 @@
 # Patcher
 Applying generic patches using the `patch` tool using Composer's `script` feature.  
-The patching is idempotent as much as the `patch` tool is, meaning patches will _not_ be applied if `patch` decides not to.
+The patching is idempotent as much as the `patch` tool is, meaning patches will _not_ be re-applied if `patch` decides not to.
 
 ## Project setup
 
