@@ -6,6 +6,7 @@ use Inviqa\Downloader\Composer as composerDownloader;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
+use \Symfony\Component\Process\ProcessUtils;
 
 class Patcher
 {
@@ -14,42 +15,51 @@ class Patcher
     /** @var ConsoleOutput */
     private $output;
 
+    /** @var \Composer\Script\Event  */
+    private $event;
+
     public function patch(\Composer\Script\Event $event)
     {
         $this->output = new ConsoleOutput();
+        $this->event  = $event;
 
-        $extra = $event->getComposer()->getPackage()->getExtra();
-
-        foreach ($extra['patches']['magento'] as $option) {
-            $this->output->writeln("<info>Downloading patch: " . $option['name'] . "</info>");
-            $downloader = new composerDownloader();
-            $this->patchFiles[] = $downloader->getContents($option['url'], $option['name']);
-        }
-
-        $this->applyPatch();
+        $this->fetchPatches();
+        $this->applyPatches();
     }
 
-    private function applyPatch()
+    private function fetchPatches()
     {
-        $this->output->writeln("<info>Applying Patch</info>");
+        $downloader = new composerDownloader();
+        $extra = $this->event->getComposer()->getPackage()->getExtra();
 
-        foreach ($this->patchFiles as $filesToPatch)
-        {
+        foreach ($extra['patches'] as $patchGroupName => $patchGroup) {
+            foreach ($patchGroup as $patchName => $patchInfo) {
+                $patchNamespace = $patchGroupName . '/' . $patchName;
+                $this->output->writeln("<info>Fetching patch $patchNamespace</info>");
+                $patchContent = $downloader->getContents($patchInfo['url'], $patchGroupName . '_' . $patchName);
+                $this->patchFiles[$patchNamespace] = $patchContent;
+            }
+        }
+    }
+
+    private function applyPatches()
+    {
+        $this->output->writeln("<info>Applying patches...</info>");
+
+        foreach ($this->patchFiles as $patchNamespace => $filesToPatch) {
             if (!$this->canApplyPatch($filesToPatch)) {
                 $this->output->writeln('<comment>Patch skipped. Patch was already applied?</comment>');
                 continue;
             }
 
-            $process = new Process("patch -p 1 < " . $filesToPatch);
+            $process = new Process("patch -p 1 < " . ProcessUtils::escapeArgument($filesToPatch));
             try {
                 $process->mustRun();
-
-                echo $process->getOutput();
-            } catch (ProcessFailedException $e) {
-                echo $e->getMessage();
+                $this->output->writeln("<info>Patch $patchNamespace successfully applied.</info>");
+            } catch (\Exception $e) {
+                $this->output->getErrorOutput()->writeln("<error>Error applying patch $patchNamespace:</error>");
+                $this->output->getErrorOutput()->writeln("<error>{$e->getMessage()}</error>");
             }
-
-            $this->output->writeln("<info>File successfully patched.</info>");
         }
     }
 
@@ -59,7 +69,7 @@ class Patcher
      */
     private function canApplyPatch($filesToPatch)
     {
-        $process = new Process("patch --dry-run -p 1 < " . $filesToPatch);
+        $process = new Process("patch --dry-run -p 1 < " . ProcessUtils::escapeArgument($filesToPatch));
         try {
             $process->mustRun();
             return $process->getExitCode() === 0;
