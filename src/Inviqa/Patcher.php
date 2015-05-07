@@ -14,21 +14,18 @@ class Patcher
     /** @var ConsoleOutput */
     private $output;
 
-    public function patchMage()
+    public function patch(\Composer\Script\Event $event)
     {
         $this->output = new ConsoleOutput();
 
-        $reader = new \Eloquent\Composer\Configuration\ConfigurationReader;
-        $configuration = $reader->read('composer.json');
+        $extra = $event->getComposer()->getPackage()->getExtra();
 
-        foreach ($configuration->extra()->patches->magento as $option) {
-            $options = json_decode(json_encode($option), true);
-            $this->output->writeln("<info>Downloading patch: " . $options['name'] . "</info>");
+        foreach ($extra['patches']['magento'] as $option) {
+            $this->output->writeln("<info>Downloading patch: " . $option['name'] . "</info>");
             $downloader = new composerDownloader();
-            $this->patchFiles[] = $downloader->getContents($options['url'], $options['name']);
+            $this->patchFiles[] = $downloader->getContents($option['url'], $option['name']);
         }
 
-        //var_dump($this->patchFiles);
         $this->applyPatch();
     }
 
