@@ -25,7 +25,8 @@ a) Patches need to be declared in the `extra` config area of Composer (root pack
 ```
 A patch's _group_ and _name_ will create its ID, used internally (i.e. `patch-group-1/patch-name-1`), so make sure you follow these 2 rules:
 - `patch-group-1` MUST be unique in the `patches` object literal
-- `patch-name-1` MUST be unique in its patch group
+- `patch-name-1` MUST be unique in its patch _group_
+
 Examples of patch groups: "magento", "drupal", "security".
 Examples of patch names: "CVS-1", "composer-autoloader".
 
