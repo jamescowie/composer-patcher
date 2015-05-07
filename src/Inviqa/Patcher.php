@@ -33,10 +33,10 @@ class Patcher
         $extra = $this->event->getComposer()->getPackage()->getExtra();
 
         foreach ($extra['patches'] as $patchGroupName => $patchGroup) {
-            foreach ($patchGroup as $patchInfo) {
-                $patchNamespace = $patchGroupName . '/' . $patchInfo['name'];
+            foreach ($patchGroup as $patchName => $patchInfo) {
+                $patchNamespace = $patchGroupName . '/' . $patchName;
                 $this->output->writeln("<info>Fetching patch $patchNamespace</info>");
-                $patchContent = $downloader->getContents($patchInfo['url'], $patchInfo['name']);
+                $patchContent = $downloader->getContents($patchInfo['url'], $patchGroupName . '_' . $patchName);
                 $this->patchFiles[$patchNamespace] = $patchContent;
             }
         }

@@ -6,18 +6,28 @@ The patching is idempotent as much as the `patch` tool is, meaning patches will 
 
 a) Patches need to be declared in the `extra` config area of Composer (root package only):
 ```json
-  "extra": {
-    "patches": {
-        "magento": {
-          "autoloader-patch": {
-              "name": "Autoloader-patcher",
-              "title": "Allow composer autoloader to be applied to Mage.php",
-              "url": "https://raw.githubusercontent.com/inviqa/magento-patches/magento-composer-autoloader-patch/composer-autoloader/0001-Adding-Composer-autoloader-to-Mage.patch?token=token"
-          }
+    "extra": {
+        "patches": {
+            "patch-group-1": {
+                "patch-name-1": {
+                    "title": "Allow composer autoloader to be applied to Mage.php",
+                    "url": "https://url/to/file1.patch"
+                }
+            },
+            "patch-group-2": {
+                "patch-name-1": {
+                    "title": "Fixes Windows 8.1",
+                    "url": "https://url/to/file2.patch"
+                }
+            }        
         }
-      }
-  }
+    }
 ```
+A patch's _group_ and _name_ will create its ID, used internally (i.e. `patch-group-1/patch-name-1`), so make sure you follow these 2 rules:
+- `patch-group-1` MUST be unique in the `patches` object literal
+- `patch-name-1` MUST be unique in its patch group
+Examples of patch groups: "magento", "drupal", "security".
+Examples of patch names: "CVS-1", "composer-autoloader".
 
 b) Additional scripts callbacks need to be added for automatic patching on `install` or `update` (root package only):
 ```json
