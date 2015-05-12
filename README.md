@@ -36,8 +36,9 @@ a) Patches need to be declared in the `extra` config area of Composer (root pack
 There are two types of patches:
 - type **"patch"** - generic patch/diff files, applied using the patch tool;
 - type **"shell"** - official Magento shell patches, which are able to apply and/or revert themselves and are self-contained.  
+
 If no type is declared, **"patch"** is assumed. If you have such a patch type declared, you **must** set the **"magento-root-dir"**
-extra config, pointing to the Mage root folder.
+extra config, pointing to the Mage root folder, or else it will fail with an error.
 
 "Shell" patches will be copied in the Mage root (set by the **"magento-root-dir"** extra config), triggered, then removed.
 
