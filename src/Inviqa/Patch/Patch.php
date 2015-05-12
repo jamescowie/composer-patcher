@@ -27,6 +27,11 @@ abstract class Patch
     private $log;
 
     /**
+     * @var array
+     */
+    private $composerExtra = array();
+
+    /**
      * @return boolean
      */
     abstract protected function doApply();
@@ -36,10 +41,11 @@ abstract class Patch
      */
     abstract protected function canApply();
 
-    public function __construct($name, $group, array $details)
+    public function __construct($name, $group, array $details, array $composerExtra)
     {
         $this->setName($name);
         $this->setGroup($group);
+        $this->setComposerExtra($composerExtra);
 
         if (!empty($details['url'])) {
             $this->setUrl($details['url']);
@@ -54,6 +60,7 @@ abstract class Patch
     {
         $namespace = $this->getNamespace();
         if ($this->canApply()) {
+            $this->beforeApply();
             $res = (bool) $this->doApply();
 
             if ($res) {
@@ -62,11 +69,19 @@ abstract class Patch
                 $this->getOutput()->writeln("<comment>Patch $namespace was not applied.</comment>");
             }
 
+            $this->afterApply($res);
+
             return $res;
         }
         $this->getOutput()->writeln("<comment>Patch $namespace skipped. Patch was already applied?</comment>");
         return null;
     }
+
+    protected function beforeApply()
+    {}
+
+    protected function afterApply($patchingWasSuccessful)
+    {}
 
     /**
      * @return string
@@ -173,13 +188,24 @@ abstract class Patch
                 throw new \Exception("Could not get contents from {$this->getUrl()}");
             }
 
-            $patchFilePath = sprintf("%s/%s_%s.patch", sys_get_temp_dir(), $this->getGroup(), $this->getName());
-            file_put_contents($patchFilePath, $patch);
+            $patchFilePath = $this->getPatchTempAbsolutePath();
+            if (!file_put_contents($patchFilePath, $patch)) {
+                throw new \Exception("Could not save patch content to $patchFilePath");
+            }
 
             $this->tempPatchFilePath = $patchFilePath;
         }
 
         return $this->tempPatchFilePath;
+    }
+
+    /**
+     * @return string
+     */
+    private function getPatchTempAbsolutePath()
+    {
+        // digest unsafe characters
+        return sys_get_temp_dir() . '/mage_patch_' . md5($this->getGroup() . $this->getName()) . '.tmp';
     }
 
     /**
@@ -199,5 +225,21 @@ abstract class Patch
     public function setOutput(Output $output)
     {
         $this->output = $output;
+    }
+
+    /**
+     * @return Output
+     */
+    public function getComposerExtra()
+    {
+        return $this->composerExtra;
+    }
+
+    /**
+     * @param array $composerExtra
+     */
+    private function setComposerExtra(array $composerExtra)
+    {
+        $this->composerExtra = $composerExtra;
     }
 }
