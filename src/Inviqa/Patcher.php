@@ -2,15 +2,14 @@
 
 namespace Inviqa;
 
-use Inviqa\Downloader\Composer as composerDownloader;
+use Inviqa\Patch\Factory;
+use Inviqa\Patch\Patch;
 use Symfony\Component\Console\Output\ConsoleOutput;
-use Symfony\Component\Process\Exception\ProcessFailedException;
-use Symfony\Component\Process\Process;
-use \Symfony\Component\Process\ProcessUtils;
+use Symfony\Component\Console\Output\OutputInterface;
 
 class Patcher
 {
-    private $patchFiles = [];
+    const EXTRA_KEY_MAGE_ROOT_DIR = 'magento-root-dir';
 
     /** @var ConsoleOutput */
     private $output;
@@ -20,61 +19,55 @@ class Patcher
 
     public function patch(\Composer\Script\Event $event)
     {
-        $this->output = new ConsoleOutput();
-        $this->event  = $event;
+        $this->init($event);
 
-        $this->fetchPatches();
-        $this->applyPatches();
-    }
+        $extraTmp = $extra = $this->event->getComposer()->getPackage()->getExtra();
 
-    private function fetchPatches()
-    {
-        $downloader = new composerDownloader();
-        $extra = $this->event->getComposer()->getPackage()->getExtra();
+        if (empty($extra['patches'])) {
+            $this->output->writeln('<info>No Magento patches were found</info>');
+        }
+
+        // don't pass the patch information
+        unset($extraTmp['patches']);
 
         foreach ($extra['patches'] as $patchGroupName => $patchGroup) {
-            foreach ($patchGroup as $patchName => $patchInfo) {
-                $patchNamespace = $patchGroupName . '/' . $patchName;
-                $this->output->writeln("<info>Fetching patch $patchNamespace</info>");
-                $patchContent = $downloader->getContents($patchInfo['url'], $patchGroupName . '_' . $patchName);
-                $this->patchFiles[$patchNamespace] = $patchContent;
-            }
-        }
-    }
-
-    private function applyPatches()
-    {
-        $this->output->writeln("<info>Applying patches...</info>");
-
-        foreach ($this->patchFiles as $patchNamespace => $filesToPatch) {
-            if (!$this->canApplyPatch($filesToPatch)) {
-                $this->output->writeln('<comment>Patch skipped. Patch was already applied?</comment>');
-                continue;
-            }
-
-            $process = new Process("patch -p 1 < " . ProcessUtils::escapeArgument($filesToPatch));
-            try {
-                $process->mustRun();
-                $this->output->writeln("<info>Patch $patchNamespace successfully applied.</info>");
-            } catch (\Exception $e) {
-                $this->output->getErrorOutput()->writeln("<error>Error applying patch $patchNamespace:</error>");
-                $this->output->getErrorOutput()->writeln("<error>{$e->getMessage()}</error>");
+            foreach ($patchGroup as $patchName => $patchDetails) {
+                $patch = Factory::create(
+                    $patchName,
+                    $patchGroupName,
+                    $patchDetails,
+                    $extraTmp
+                );
+                $patch->setOutput($this->output);
+                $this->applyPatch($patch);
             }
         }
     }
 
     /**
-     * @param $filesToPatch
-     * @return bool
+     * @param \Composer\Script\Event $event
      */
-    private function canApplyPatch($filesToPatch)
+    private function init(\Composer\Script\Event $event)
     {
-        $process = new Process("patch --dry-run -p 1 < " . ProcessUtils::escapeArgument($filesToPatch));
+        $this->output = new ConsoleOutput();
+
+        if ($event->getIo()->isDebug()) {
+            $this->output->setVerbosity(OutputInterface::VERBOSITY_DEBUG);
+        }
+
+        $this->event  = $event;
+
+        $checker = new EnvChecker($event);
+        $checker->check();
+    }
+
+    private function applyPatch(Patch $patch)
+    {
         try {
-            $process->mustRun();
-            return $process->getExitCode() === 0;
-        } catch (ProcessFailedException $e) {
-            return false;
+            $patch->apply();
+        } catch (\Exception $e) {
+            $this->output->writeln("<error>Error applying patch {$patch->getNamespace()}:</error>");
+            $this->output->writeln("<error>{$e->getMessage()}</error>");
         }
     }
 }
