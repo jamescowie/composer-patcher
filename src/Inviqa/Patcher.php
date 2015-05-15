@@ -25,6 +25,7 @@ class Patcher
 
         if (empty($extra['patches'])) {
             $this->output->writeln('<info>No Magento patches were found</info>');
+            return;
         }
 
         // don't pass the patch information
